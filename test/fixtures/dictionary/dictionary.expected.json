@@ -1,0 +1,7 @@
+[
+  {
+    "message": "Misspelled word \"hello\".",
+    "span": { "offset": 11, "length": 5, "line": 1, "column": 12 },
+    "source": "hello"
+  }
+]

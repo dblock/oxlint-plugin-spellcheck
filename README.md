@@ -1,5 +1,7 @@
 # oxlint-plugin-spellcheck
 
+[![CI](https://github.com/dblock/oxlint-plugin-spellcheck/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dblock/oxlint-plugin-spellcheck/actions/workflows/ci.yml)
+
 A spellcheck plugin for [Oxlint](https://oxc.rs/docs/guide/usage/linter.html), powered by [Kotoshu](https://github.com/kotoshu/kotoshu-rs). Checks comments, JSX text, and human-facing attributes, with opt-in strings and identifiers.
 
 ## Usage

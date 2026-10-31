@@ -20,7 +20,7 @@
   "scripts": {
     "lint": "oxlint --disable-nested-config . && oxfmt --check .",
     "format": "oxfmt",
-    "test": "node --test test/cli.test.mjs"
+    "test": "node --test test/integration/suite.test.mjs"
   },
   "dependencies": {
     "@kotoshu/wasm": "1.1.0",

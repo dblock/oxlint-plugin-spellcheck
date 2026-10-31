@@ -1,0 +1,20 @@
+{
+  "plugins": [],
+  "jsPlugins": [
+    {
+      "name": "spellcheck",
+      "specifier": "oxlint-plugin-spellcheck"
+    }
+  ],
+  "rules": {
+    "spellcheck/check": [
+      "error",
+      {
+        "dictionaries": [
+          "@dictionary-en",
+          "./words.txt"
+        ]
+      }
+    ]
+  }
+}

@@ -36,3 +36,9 @@ npm install --save-dev oxlint /path/to/oxlint-plugin-spellcheck-0.1.0.tgz
 ```
 
 Configure the plugin as shown in [Usage](README.md#usage).
+
+## Benchmarks
+
+Run `npm run bench` after installing dependencies. The benchmark checks real Oxlint and collection output before reporting end-to-end timings, with one worker, one warm-up, and five measured samples per workload. Set `BENCH_SAMPLES=3` for a shorter run or `BENCH_FILTER=unique` to select workload names containing `unique`. It covers 100,000 clean words, 10,000 repeated/varied typos or unique clean words across 100 files, and repeated/unique in-process dictionary lookups.
+
+Corpora are generated in an owned temporary directory and removed afterward. Runtime network access is blocked. Results include Node/platform metadata, median/min/max milliseconds, and word throughput; compare identical workloads and sample counts on the same machine rather than treating timings as CI thresholds.

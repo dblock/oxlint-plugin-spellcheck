@@ -21,6 +21,7 @@
   "type": "module",
   "exports": "./src/index.mjs",
   "scripts": {
+    "bench": "node benchmarks/bench.mjs",
     "lint": "oxlint --disable-nested-config . && oxfmt --check .",
     "format": "oxfmt",
     "test": "node --test test/integration/suite.test.mjs"

@@ -1,5 +1,5 @@
 {
-  "name": "oxlint-plugin-spellcheck",
+  "name": "@dblock/oxlint-plugin-spellcheck",
   "version": "0.1.0",
   "description": "AST-aware spellchecking for Oxlint, powered by Kotoshu.",
   "license": "MIT",

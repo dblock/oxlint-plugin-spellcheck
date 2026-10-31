@@ -243,7 +243,7 @@ function collect(options) {
       .filter(
         (plugin) =>
           typeof plugin === "object" &&
-          plugin.specifier === "oxlint-plugin-spellcheck",
+          plugin.specifier === "@dblock/oxlint-plugin-spellcheck",
       )
       .map((plugin) => plugin.name),
   ];

@@ -1,0 +1,12 @@
+[
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 3, "length": 4, "line": 1, "column": 4 },
+    "source": "helo"
+  },
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 99, "length": 4, "line": 3, "column": 25 },
+    "source": "helo"
+  }
+]

@@ -17,7 +17,11 @@ npm run lint
 npm test
 ```
 
-`npm run lint` runs Oxlint and Oxfmt. `npm test` runs the packed-CLI acceptance suite. See [DESIGN.md](DESIGN.md#self-hosting-and-validation) for the test architecture and repository lint policy.
+`npm run lint` runs Oxlint and Oxfmt. `npm test` runs the fixture-driven, packed-CLI integration suite. See [DESIGN.md](DESIGN.md#self-hosting-and-validation) for the test architecture and repository lint policy.
+
+Give each scenario its own directory under `test/fixtures/`, containing source, `.oxlintrc.json`, expected output, and any local vocabulary resources. Add its directory name and source filename to `test/integration/suite.test.mjs`. For example, `jsx-strings/` contains `prose.tsx`, `.oxlintrc.json`, and `prose.expected.json`. Configurations and vocabulary paths resolve from the scenario directory; shared synthetic npm dictionaries live under `test/fixtures/packages/` and are installed once.
+
+Expected diagnostics use `<source>.expected.json` with the source extension removed; use `[]` for clean results. Failure scenarios instead use `error.expected.json`, a JSON string holding the expected error regular expression. Both outcomes use the same case table and `fixture.check`; each scenario must have exactly one expectation file, which determines the assertions independently of the CLI exit status. Review expected messages, spans, and highlighted source when adding or changing a case; tests never rewrite expectations.
 
 ## Testing in Another Project
 

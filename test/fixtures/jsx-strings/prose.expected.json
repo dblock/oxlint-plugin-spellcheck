@@ -1,0 +1,27 @@
+[
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 3, "length": 4, "line": 1, "column": 4 },
+    "source": "helo"
+  },
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 42, "length": 4, "line": 2, "column": 35 },
+    "source": "helo"
+  },
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 65, "length": 4, "line": 2, "column": 58 },
+    "source": "helo"
+  },
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 99, "length": 4, "line": 3, "column": 25 },
+    "source": "helo"
+  },
+  {
+    "message": "Misspelled word \"helo\". Suggestions: hello, help, hell.",
+    "span": { "offset": 142, "length": 4, "line": 4, "column": 37 },
+    "source": "helo"
+  }
+]

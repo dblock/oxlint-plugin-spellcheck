@@ -167,7 +167,7 @@ Install npm dependencies before running checks; spelling execution is offline.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and checks, and [DESIGN.md](DESIGN.md) for architecture and design decisions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and checks, [DESIGN.md](DESIGN.md) for architecture and design decisions, and [RELEASING.md](RELEASING.md) for publishing.
 
 ## License
 

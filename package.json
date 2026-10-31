@@ -1,7 +1,6 @@
 {
   "name": "oxlint-plugin-spellcheck",
   "version": "0.1.0",
-  "private": true,
   "description": "AST-aware spellchecking for Oxlint, powered by Kotoshu.",
   "license": "MIT",
   "repository": {
@@ -14,8 +13,10 @@
   "files": [
     "src/",
     "README.md",
+    "CHANGELOG.md",
     "CONTRIBUTING.md",
     "DESIGN.md",
+    "RELEASING.md",
     "LICENSE"
   ],
   "type": "module",

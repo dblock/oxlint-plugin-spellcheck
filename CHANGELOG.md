@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0
+## 0.1.0 (2026-10-31)
 
 - [#6](https://github.com/dblock/oxlint-plugin-spellcheck/pull/6): Add repeatable CLI benchmarks and reuse bounded dictionary suggestion results across files - [@dblock](https://github.com/dblock).
 - [#5](https://github.com/dblock/oxlint-plugin-spellcheck/pull/5): Add explicit vocabulary collection with new-file output and opt-in configuration updates - [@dblock](https://github.com/dblock).

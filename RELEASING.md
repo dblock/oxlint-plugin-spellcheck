@@ -1,6 +1,6 @@
 # Releasing
 
-Publishing packages, pushing release tags, and creating GitHub releases require explicit maintainer authorization. Never overwrite a published version or an existing release tag.
+Publishing packages, pushing release tags, and creating GitHub releases require explicit maintainer authorization. The npm package is `@dblock/oxlint-plugin-spellcheck`; the repository name and `oxlint-spellcheck` command are unchanged. Never overwrite a published version or an existing release tag.
 
 ## Prepare
 
@@ -12,7 +12,7 @@ Publishing packages, pushing release tags, and creating GitHub releases require 
 
 ## Publish
 
-Confirm the intended npm account with `npm whoami` and check that `npm view oxlint-plugin-spellcheck@VERSION version` does not report an existing release. For the first publication, an npm `E404` is expected; authentication or network errors are not evidence that a version is available. If authentication fails, run `npm login` and retry.
+Confirm the intended npm account with `npm whoami` and check that `npm view @dblock/oxlint-plugin-spellcheck@VERSION version` does not report an existing release. For the first publication, an npm `E404` is expected; authentication or network errors are not evidence that a version is available. If authentication fails, run `npm login` and retry.
 
 Publish from the clean, validated release commit:
 
@@ -25,13 +25,13 @@ Follow npm's authentication prompt. If npm requires a command-line one-time pass
 Verify the exact public version and registry integrity:
 
 ```sh
-npm view oxlint-plugin-spellcheck@VERSION version dist.integrity
+npm view @dblock/oxlint-plugin-spellcheck@VERSION version dist.integrity
 ```
 
 Install the published version and supported Oxlint in an owned temporary consumer:
 
 ```sh
-npm install --save-dev oxlint oxlint-plugin-spellcheck@VERSION
+npm install --save-dev oxlint @dblock/oxlint-plugin-spellcheck@VERSION
 ```
 
 Follow the README configuration and check a source comment containing `helo`. Confirm native lint reports that word, the collection CLI prints it, collection with `--output .spellcheck.txt --update-config` registers it, and a follow-up lint run passes. Run these checks with the repository's `test/offline.mjs` preload after dependency installation to verify runtime network access is unnecessary. Remove only the temporary consumer created for this check.

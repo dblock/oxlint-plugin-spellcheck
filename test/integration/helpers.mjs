@@ -77,7 +77,7 @@ export function project(t) {
   }
   const paths = [
     directory,
-    join(directory, "node_modules/oxlint-plugin-spellcheck"),
+    join(directory, "node_modules/@dblock/oxlint-plugin-spellcheck"),
     join(directory, "node_modules/dictionary-en"),
   ];
   const capture = () =>
@@ -114,7 +114,10 @@ export function project(t) {
       file,
     ]);
   }
-  const plugin = join(directory, "node_modules/oxlint-plugin-spellcheck");
+  const plugin = join(
+    directory,
+    "node_modules/@dblock/oxlint-plugin-spellcheck",
+  );
   const binary = JSON.parse(readFileSync(join(plugin, "package.json"), "utf8"))
     .bin["oxlint-spellcheck"];
 
@@ -144,7 +147,7 @@ export function project(t) {
         command === "collect"
           ? invoke(
               name,
-              join("node_modules/oxlint-plugin-spellcheck", binary),
+              join("node_modules/@dblock/oxlint-plugin-spellcheck", binary),
               args,
             )
           : run(name, file, flags);

@@ -194,6 +194,6 @@ export const check = {
 };
 
 export default {
-  meta: { name: "oxlint-plugin-spellcheck", version: "0.1.0" },
+  meta: { name: "@dblock/oxlint-plugin-spellcheck", version: "0.1.0" },
   rules: { check },
 };

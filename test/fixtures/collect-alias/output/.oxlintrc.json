@@ -1,6 +1,6 @@
 {
   "plugins": [],
-  "jsPlugins": [{ "name": "words", "specifier": "oxlint-plugin-spellcheck" }],
+  "jsPlugins": [{ "name": "words", "specifier": "@dblock/oxlint-plugin-spellcheck" }],
   "rules": { "words/check": [
       "warn",
       {

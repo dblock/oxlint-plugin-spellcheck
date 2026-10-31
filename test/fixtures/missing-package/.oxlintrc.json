@@ -3,7 +3,7 @@
   "jsPlugins": [
     {
       "name": "spellcheck",
-      "specifier": "oxlint-plugin-spellcheck"
+      "specifier": "@dblock/oxlint-plugin-spellcheck"
     }
   ],
   "rules": {

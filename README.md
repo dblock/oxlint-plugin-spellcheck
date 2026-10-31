@@ -9,7 +9,7 @@ A spellcheck plugin for [Oxlint](https://oxc.rs/docs/guide/usage/linter.html), p
 Install the plugin and Oxlint:
 
 ```sh
-npm install --save-dev oxlint oxlint-plugin-spellcheck@0.1.0
+npm install --save-dev oxlint @dblock/oxlint-plugin-spellcheck@0.1.0
 ```
 
 Add `.oxlintrc.json`:
@@ -19,7 +19,7 @@ Add `.oxlintrc.json`:
   "jsPlugins": [
     {
       "name": "spellcheck",
-      "specifier": "oxlint-plugin-spellcheck"
+      "specifier": "@dblock/oxlint-plugin-spellcheck"
     }
   ],
   "rules": {
@@ -74,7 +74,7 @@ All options are optional. Rule options use the same interface as other Oxlint ru
   "jsPlugins": [
     {
       "name": "spellcheck",
-      "specifier": "oxlint-plugin-spellcheck"
+      "specifier": "@dblock/oxlint-plugin-spellcheck"
     }
   ],
   "rules": {

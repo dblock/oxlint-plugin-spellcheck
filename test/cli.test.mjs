@@ -68,11 +68,11 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
       [
         executable,
         "--config",
-        `fixtures/${config}`,
+        join("fixtures", config),
         "--format",
         "json",
         ...extra,
-        `fixtures/${file}`,
+        join("fixtures", file),
       ],
       {
         cwd: directory,
@@ -91,6 +91,7 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
   }
   function findings(file, config, extra) {
     const result = invoke(file, config, extra);
+    assert.notEqual(result.stdout.trim(), "", result.stderr);
     const report = JSON.parse(result.stdout);
     assert.equal(report.number_of_files, 1, result.stderr);
     assert.equal(
@@ -108,6 +109,26 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
   const before = await snapshot(join(directory, "fixtures"));
   const plugin = join(directory, "node_modules/oxlint-plugin-spellcheck");
   const pluginBefore = await snapshot(plugin);
+  await t.test(
+    "the repository configuration loads the package and excludes negative fixtures",
+    async () => {
+      await cp(join(root, ".oxlintrc.json"), join(directory, ".oxlintrc.json"));
+      await cp(join(root, "test/fixtures"), join(directory, "test/fixtures"), {
+        recursive: true,
+      });
+      const smoke = join(directory, "smoke.tsx");
+      const extra = ["--disable-nested-config", "test/fixtures"];
+      await cp(join(root, "test/fixtures/valid.tsx"), smoke);
+      assert.deepEqual(
+        findings("../smoke.tsx", "../.oxlintrc.json", extra),
+        [],
+      );
+      await cp(join(root, "test/fixtures/typo.js"), smoke);
+      const diagnostics = findings("../smoke.tsx", "../.oxlintrc.json", extra);
+      assert.equal(diagnostics.length, 1);
+      assert.match(diagnostics[0].message, /"helo"/u);
+    },
+  );
   await t.test("clean code and prose exclusions", () => {
     assert.deepEqual(findings("valid.tsx"), []);
   });

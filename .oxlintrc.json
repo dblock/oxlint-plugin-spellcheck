@@ -2,7 +2,7 @@
   "jsPlugins": [
     {
       "name": "spellcheck",
-      "specifier": "./src/index.mjs"
+      "specifier": "oxlint-plugin-spellcheck"
     }
   ],
   "rules": {

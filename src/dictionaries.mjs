@@ -10,6 +10,22 @@ const utf8 = (path) =>
   new TextDecoder("utf-8", { fatal: true }).decode(readFileSync(path));
 const normalize = (word) => word.replaceAll("\u2019", "'");
 
+function cached(operation, limit) {
+  const values = new Map();
+  const keys = [];
+  let position = 0;
+  return (word) => {
+    if (!values.has(word)) {
+      const value = operation(word);
+      if (values.size >= limit) values.delete(keys[position]);
+      keys[position] = word;
+      position = (position + 1) % limit;
+      values.set(word, value);
+    }
+    return values.get(word);
+  };
+}
+
 function engine(aff, dic) {
   const signature = [aff, dic]
     .map((path) => {
@@ -20,7 +36,10 @@ function engine(aff, dic) {
   if (!engines.has(signature)) {
     const dictionary = new KotoshuWasm(utf8(aff), utf8(dic));
     if (engines.size >= 32) engines.delete(engines.keys().next().value);
-    engines.set(signature, dictionary);
+    engines.set(signature, {
+      dictionary,
+      suggest: cached((word) => dictionary.suggest(word, 3), 256),
+    });
   }
   return engines.get(signature);
 }
@@ -67,13 +86,13 @@ export function getDictionary(entries, cwd) {
   const suggestions = new Map();
   const has = (word) =>
     words.has(word) ||
-    dictionaries.some((dictionary) => dictionary.correct(normalize(word)));
+    dictionaries.some(({ dictionary }) => dictionary.correct(normalize(word)));
   return {
     has,
     suggest(word) {
       if (!suggestions.has(word)) {
         const ranked = dictionaries
-          .flatMap((dictionary) => dictionary.suggest(normalize(word), 3))
+          .flatMap((dictionary) => dictionary.suggest(normalize(word)))
           .sort(
             (left, right) =>
               right.confidence - left.confidence ||

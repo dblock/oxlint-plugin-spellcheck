@@ -70,7 +70,27 @@ The rule reports locations through Oxlint's source-code APIs. Native JSON diagno
 
 Any configured Hunspell dictionary or exact vocabulary word can accept a token. Suggestions are merged across Hunspell engines, ranked by descending confidence, ascending distance, and ordinal spelling, then deduplicated and filtered to accepted words. Vocabulary files supply acceptance rather than their own suggestion engine.
 
-The module caches up to 32 engines using dictionary paths and file device, inode, size, and nanosecond modification time. Each rule's dictionary collection caches suggestions for up to 256 unknown words. These bounded caches reduce repeated work while changed dictionary resources get new engine signatures.
+The module caches up to 32 engines using dictionary paths and file device, inode, size, and nanosecond modification time. Each engine caches raw suggestions for up to 256 normalized words, allowing files in the same Oxlint worker to reuse expensive WASM queries. A bounded FIFO key ring avoids scanning deleted Map entries during eviction. Each rule's dictionary collection additionally caches merged, filtered suggestions for up to 256 unknown words. Correctness checks remain direct engine calls; vocabulary acceptance and multi-dictionary ranking remain scoped to that collection. Changed dictionary resources get new engine signatures and fresh suggestion caches.
+
+## Benchmarks
+
+`npm run bench` generates checked corpora and measures the actual Oxlint and collection commands with one worker. Each workload has a warm-up and configurable measured samples; reports include end-to-end median/min/max time and throughput. The in-process lookup workload excludes dictionary construction. Benchmark corpora are removed afterward, and runtime network access is blocked.
+
+The comparison below used Node.js 25.5.0 on macOS arm64 and the same corpora before and after engine-level suggestion caching. CLI timings include startup and output validation. Repeated-word cases used three samples; the cache-unfriendly unique-word comparison used five samples under matching repository and npm invocation conditions.
+
+| Workload | Words | Samples | Before median (ms) | After median (ms) | Speedup |
+| --- | --- | --- | --- | --- | --- |
+| Oxlint, clean prose | 100,000 | 3 | 477.35 | 487.44 | 1.0x |
+| Oxlint, repeated typos across 100 files | 10,000 | 3 | 1,636.23 | 258.79 | 6.3x |
+| Oxlint, varied typos across 100 files | 10,000 | 3 | 25,626.78 | 517.20 | 49.5x |
+| Collect, repeated typos across 100 files | 10,000 | 3 | 1,782.11 | 445.72 | 4.0x |
+| Collect, varied typos across 100 files | 10,000 | 3 | 25,871.93 | 707.04 | 36.6x |
+| Oxlint, unique clean words across 100 files | 10,000 | 5 | 364.35 | 350.52 | 1.0x |
+| Unique dictionary lookups | 100,000 | 5 | 111.64 | 109.21 | 1.0x |
+
+Repeated suggestions across files were the measured bottleneck: per-rule caching alone recomputed the same expensive WASM queries once per file. The shared raw-result cache removes that duplication without changing diagnostic messages, locations, or configuration semantics. A correctness cache was also tried and rejected: it sped up repeated lookups but added overhead to cache-unfriendly unique-word lookups. The final change therefore caches only suggestions.
+
+These are synthetic workloads, not promised speedups for every repository; unique words, multiple workers, and different dictionaries change cache effectiveness. Clean workloads were effectively unchanged, and process-startup controls confirmed noticeable timing variability. Timings are comparison data rather than CI pass/fail thresholds.
 
 ## Read-Only Behavior and Fixes
 

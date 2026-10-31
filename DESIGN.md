@@ -80,6 +80,16 @@ All results are report-only, including with `oxlint --fix`. Changing runtime str
 
 Dependency installation is a separate preparation step and may contact the npm registry. Offline spelling does not require offline package installation or a prewarmed registry metadata cache.
 
+## Vocabulary Collection
+
+`oxlint-spellcheck collect` is an explicit command separate from rule execution. It resolves the project's installed Oxlint, runs its normal configuration and file selection, and extracts decoded unknown words from this plugin's native JSON diagnostics. It does not add another AST traversal or spelling engine. Case-sensitive deduplication and ordinal sorting produce one word per line. Native ignores, suppression, dictionary acceptance, and prose settings remain authoritative.
+
+The command manages JSON output and rejects fix, initialization, language-server, and diagnostic-hiding flags. Non-spelling lint errors, invalid reports, missing resources, and zero processed files fail rather than producing success-shaped output. Warnings remain visible on stderr. Dependencies must already be installed; collection does not use `npx` or download anything.
+
+Default output is stdout. `--output` exclusively creates a new file and never overwrites an existing file or symlink. Configuration changes additionally require `--update-config`: candidates otherwise remain separate from accepted vocabulary. Enabling the output immediately accepts its words, including typos, so review is necessary.
+
+JSONC edits preserve surrounding comments and formatting. Extended JSON/JSONC rule settings are retained, with English added only when no dictionary list was configured. Relative vocabulary paths follow the rule's working-directory semantics and explicitly mark file names beginning with `@` as local paths. Configuration replacement uses a sibling temporary file and checks for concurrent edits; a failed update removes the newly created candidate file. JavaScript/TypeScript configurations and spellcheck rule overrides are rejected for automatic updates instead of guessing at their effective settings.
+
 ## Self-Hosting and Validation
 
 The repository's `.oxlintrc.json` loads the plugin through its public package export, just like a consumer. It uses the default spelling settings. Negative fixtures are excluded, and `npm run lint` disables nested configuration loading so fixture configurations cannot override that policy. Oxfmt handles formatting.
@@ -98,4 +108,4 @@ Dylint is prior art, not a promise of feature parity. Rustdoc `include_str!` int
 
 Standalone documents would require a companion CLI or another integration because Oxlint plugins cannot add those input formats. YAML front matter, Liquid exclusions, and Markdown `spellcheck:disable`/`enable`/`todo` directives are not implemented. Native Oxlint suppression remains available.
 
-Vocabulary collection, if added, should be an explicit command rather than a side effect of a missing file during linting. Automatic source fixes remain deferred. Current hyphenated-token skipping also differs from Dylint, which checks the words in `helo-world`; that parity gap needs a separate focused change.
+Automatic source fixes remain deferred. Current hyphenated-token skipping also differs from Dylint, which checks the words in `helo-world`; that parity gap needs a separate focused change.

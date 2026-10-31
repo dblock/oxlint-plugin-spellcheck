@@ -23,6 +23,8 @@ Give each scenario its own directory under `test/fixtures/`, containing source, 
 
 Expected diagnostics use `<source>.expected.json` with the source extension removed; use `[]` for clean results. Failure scenarios instead use `error.expected.json`, a JSON string holding the expected error regular expression. Both outcomes use the same case table and `fixture.check`; each scenario must have exactly one expectation file, which determines the assertions independently of the CLI exit status. Review expected messages, spans, and highlighted source when adding or changing a case; tests never rewrite expectations.
 
+Collection scenarios use `"collect"` as the table's fourth field and collection options as the third. Their expected JSON object records `stdout`; an optional `output/` directory contains exact expected candidate/configuration bytes. Only those prescribed writes are allowed by the workspace snapshot, and configuration update scenarios must pass a follow-up lint run without findings.
+
 ## Testing in Another Project
 
 Pack the working copy to test local changes in a consuming project:

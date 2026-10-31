@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
 import {
   cpSync,
+  existsSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
@@ -84,18 +85,10 @@ export function project(t) {
   const before = capture();
   const offline = new URL("../offline.mjs", import.meta.url).href;
 
-  function run(name, file, flags = []) {
+  function invoke(name, executable, args) {
     const result = spawnSync(
       process.execPath,
-      [
-        join(directory, "node_modules/oxlint/bin/oxlint"),
-        "--config",
-        ".oxlintrc.json",
-        "--format",
-        "json",
-        ...flags,
-        file,
-      ],
+      [join(directory, executable), ...args],
       {
         cwd: join(directory, "fixtures", name),
         encoding: "utf8",
@@ -111,9 +104,22 @@ export function project(t) {
     assert.equal(result.signal, null, result.stderr);
     return result;
   }
+  function run(name, file, flags = []) {
+    return invoke(name, "node_modules/oxlint/bin/oxlint", [
+      "--config",
+      ".oxlintrc.json",
+      "--format",
+      "json",
+      ...flags,
+      file,
+    ]);
+  }
+  const plugin = join(directory, "node_modules/oxlint-plugin-spellcheck");
+  const binary = JSON.parse(readFileSync(join(plugin, "package.json"), "utf8"))
+    .bin["oxlint-spellcheck"];
 
   return {
-    check(name, file, flags) {
+    check(name, file, flags = [], command = "lint") {
       const expectations = readdirSync(join(fixtures, name)).filter((entry) =>
         entry.endsWith(".expected.json"),
       );
@@ -131,11 +137,44 @@ export function project(t) {
       const expected = JSON.parse(
         readFileSync(join(fixtures, name, expectation), "utf8"),
       );
-      const result = run(name, file, flags);
+      const args = ["collect", ...flags];
+      if (!flags.includes("--")) args.push("--");
+      args.push("--config", ".oxlintrc.json", file);
+      const result =
+        command === "collect"
+          ? invoke(
+              name,
+              join("node_modules/oxlint-plugin-spellcheck", binary),
+              args,
+            )
+          : run(name, file, flags);
       if (expectation === "error.expected.json") {
         assert.equal(typeof expected, "string");
         assert.notEqual(result.status, 0);
         assert.match(result.stderr + result.stdout, new RegExp(expected, "iu"));
+        return;
+      }
+      if (command === "collect") {
+        assert.equal(result.status, 0, result.stderr);
+        assert.equal(result.stdout, expected.stdout);
+        const output = join(fixtures, name, "output");
+        if (existsSync(output)) {
+          for (const entry of readdirSync(output)) {
+            const contents = readFileSync(join(output, entry));
+            assert.deepEqual(
+              readFileSync(join(directory, "fixtures", name, entry)),
+              contents,
+            );
+            before[0].fixtures[name][entry] = contents;
+          }
+          if (existsSync(join(output, ".oxlintrc.json"))) {
+            const clean = run(name, file);
+            assert.equal(clean.status, 0, clean.stderr);
+            const report = JSON.parse(clean.stdout);
+            assert.equal(report.number_of_files, 1);
+            assert.deepEqual(report.diagnostics, []);
+          }
+        }
         return;
       }
       assert.ok(Array.isArray(expected));

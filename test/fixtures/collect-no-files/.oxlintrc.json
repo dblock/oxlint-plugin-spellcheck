@@ -1,0 +1,6 @@
+{
+  "plugins": [],
+  "jsPlugins": [{ "name": "spellcheck", "specifier": "oxlint-plugin-spellcheck" }],
+  "rules": { "spellcheck/check": "error" },
+  "ignorePatterns": ["example.js"]
+}

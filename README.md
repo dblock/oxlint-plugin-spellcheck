@@ -51,6 +51,20 @@ example.js:1:8: Misspelled word "helo". Suggestions: hello, help, hell. [Error/s
 1 problem
 ```
 
+Collect unknown words into a new vocabulary file and update the configuration to use it:
+
+```sh
+npx --no-install oxlint-spellcheck collect --output .spellcheck.txt --update-config -- .
+```
+
+The example adds `helo` to `.spellcheck.txt` and includes that file alongside `@dictionary-en` in the rule's `dictionaries`. Rerun Oxlint:
+
+```sh
+npx --no-install oxlint .
+```
+
+The example now passes without spelling findings. Collection includes typos as well as project-specific words: review the file and correct accidental misspellings instead of accepting them. Neither collection nor ordinary linting changes checked source.
+
 ## Configuration
 
 All options are optional. Rule options use the same interface as other Oxlint rules:
@@ -124,6 +138,26 @@ Use Oxlint's native suppression comments:
 `oxlint-disable` and `oxlint-enable` work normally too.
 
 All spelling results are report-only, including with `oxlint --fix`.
+
+## Vocabulary Collection
+
+Print sorted, unique unknown words, preserving case:
+
+```sh
+npx --no-install oxlint-spellcheck collect -- .
+```
+
+Use `--output <file>` to create a candidate file instead of printing words. Existing files are never overwritten. Add `--update-config` to include the new file in the selected JSON/JSONC Oxlint configuration; without that flag, configuration is unchanged.
+
+Pass Oxlint options and file selection after `--`, for example:
+
+```sh
+npx --no-install oxlint-spellcheck collect --output candidates.txt --update-config -- --config .oxlintrc.json src
+```
+
+Collection respects the configured dictionaries, prose scope, ignores, and native suppression. Known or already accepted words are omitted. Review candidates before treating them as accepted vocabulary; adding them to `dictionaries` suppresses their future spelling findings.
+
+Config updates preserve comments, rule severity, existing dictionaries, and spelling options, including inherited JSON/JSONC settings. They target `--config`, or `.oxlintrc.json` in the current directory. JavaScript/TypeScript configs and spellcheck rule overrides require manual configuration updates. Other lint errors or selecting no files stop collection without producing a candidate file.
 
 ## Requirements
 

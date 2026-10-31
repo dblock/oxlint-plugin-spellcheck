@@ -1,0 +1,18 @@
+{
+  // Keep inherited configuration.
+  "extends": [
+    "./base.json"
+  ],
+  "rules": {
+    "spellcheck/check": [
+      "warn",
+      {
+        "strings": true,
+        "dictionaries": [
+          "@spellcheck/dictionary-fixture",
+          "./candidates.txt"
+        ]
+      }
+    ]
+  }
+}

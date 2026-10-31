@@ -1,0 +1,4 @@
+{
+  // Keep inherited configuration.
+  "extends": ["./base.json"]
+}

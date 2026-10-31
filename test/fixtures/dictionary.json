@@ -1,6 +1,6 @@
 {
   "extends": ["./.oxlintrc.json"],
   "rules": {
-    "spellcheck/check": ["error", { "dictionaries": ["./fixtures/dictionary"] }]
+    "spellcheck/check": ["error", { "dictionaries": ["@spellcheck/dictionary-fixture"] }]
   }
 }

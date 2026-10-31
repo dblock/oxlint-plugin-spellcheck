@@ -10,7 +10,7 @@ const attributes = new Set([
   "aria-description",
 ]);
 const defaults = {
-  dictionaries: ["builtin:en"],
+  dictionaries: ["@dictionary-en"],
   comments: true,
   jsx: true,
   strings: false,

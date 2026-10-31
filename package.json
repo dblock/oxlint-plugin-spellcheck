@@ -1,0 +1,36 @@
+{
+  "name": "oxlint-plugin-spellcheck",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AST-aware spellchecking for Oxlint, powered by Kotoshu.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dblock/oxlint-plugin-spellcheck.git"
+  },
+  "files": [
+    "src/",
+    "data/",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "exports": "./src/index.mjs",
+  "scripts": {
+    "lint": "oxlint --disable-nested-config . && oxfmt --check .",
+    "format": "oxfmt",
+    "test": "node --test test/cli.test.mjs"
+  },
+  "dependencies": {
+    "@kotoshu/wasm": "1.1.0",
+    "decode-named-character-reference": "1.3.0",
+    "mdast-util-from-markdown": "2.1.0"
+  },
+  "devDependencies": {
+    "oxfmt": "0.75.0",
+    "oxlint": "1.90.0"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.5.0"
+  }
+}

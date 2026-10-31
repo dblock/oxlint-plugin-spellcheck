@@ -1,0 +1,12 @@
+{
+  "jsPlugins": [
+    {
+      "name": "spellcheck",
+      "specifier": "./src/index.mjs"
+    }
+  ],
+  "rules": {
+    "spellcheck/check": "error"
+  },
+  "ignorePatterns": ["test/fixtures/**"]
+}

@@ -42,10 +42,18 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
       root,
     ),
   );
+  assert.equal(
+    archive.files.some(({ path }) => /\.(?:aff|dic)$/u.test(path)),
+    false,
+    "Dictionary assets must come from dependencies, not the plugin archive.",
+  );
   await writeFile(
     join(directory, "package.json"),
     '{"private":true,"type":"module"}',
   );
+  await cp(join(root, "test/fixtures"), join(directory, "fixtures"), {
+    recursive: true,
+  });
   npm(
     [
       "install",
@@ -54,12 +62,11 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
       "--no-fund",
       join(directory, archive.filename),
       "oxlint@1.90.0",
+      join(directory, "fixtures/dictionary"),
+      join(directory, "fixtures/incomplete-dictionary"),
     ],
     directory,
   );
-  await cp(join(root, "test/fixtures"), join(directory, "fixtures"), {
-    recursive: true,
-  });
   const executable = join(directory, "node_modules/oxlint/bin/oxlint");
   const offline = new URL("./offline.mjs", import.meta.url).href;
   function invoke(file, config = ".oxlintrc.json", extra = []) {
@@ -109,6 +116,8 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
   const before = await snapshot(join(directory, "fixtures"));
   const plugin = join(directory, "node_modules/oxlint-plugin-spellcheck");
   const pluginBefore = await snapshot(plugin);
+  const english = join(directory, "node_modules/dictionary-en");
+  const englishBefore = await snapshot(english);
   await t.test(
     "the repository configuration loads the package and excludes negative fixtures",
     async () => {
@@ -228,19 +237,43 @@ test("the packed plugin checks spelling through the actual Oxlint CLI offline", 
         findings("dictionary.js", "dictionary.json")[0].message,
         /"hello"/u,
       );
+      assert.deepEqual(
+        findings("dictionary.js", "combined-dictionaries.json"),
+        [],
+      );
+    },
+  );
+  await t.test(
+    "unprefixed entries are files even when an installed package shares the name",
+    async () => {
+      await cp(
+        join(directory, "fixtures/words.txt"),
+        join(directory, "dictionary-en"),
+      );
+      const diagnostics = findings("replacement.js", "bare-dictionary.json");
+      assert.equal(diagnostics.length, 1);
+      assert.match(diagnostics[0].message, /"hello"/u);
     },
   );
   await t.test(
     "missing dictionaries and malformed options fail explicitly",
     () => {
-      const missing = invoke("typo.js", "missing.json");
-      assert.notEqual(missing.status, 0);
-      assert.match(missing.stderr + missing.stdout, /missing\.txt/u);
-      const invalid = invoke("typo.js", "invalid.json");
-      assert.notEqual(invalid.status, 0);
-      assert.match(invalid.stderr + invalid.stdout, /boolean|schema|invalid/iu);
+      for (const [config, message] of [
+        ["missing.json", /missing\.txt/u],
+        ["missing-package.json", /@spellcheck\/missing-dictionary-fixture/u],
+        ["incomplete-dictionary.json", /index\.dic/u],
+        ["invalid-package.json", /Invalid dictionary package/u],
+        ["double-prefix.json", /Invalid dictionary package/u],
+        ["local-dictionary.json", /EISDIR|directory/iu],
+        ["invalid.json", /boolean|schema|invalid/iu],
+      ]) {
+        const result = invoke("typo.js", config);
+        assert.notEqual(result.status, 0);
+        assert.match(result.stderr + result.stdout, message);
+      }
     },
   );
   assert.deepEqual(await snapshot(join(directory, "fixtures")), before);
   assert.deepEqual(await snapshot(plugin), pluginBefore);
+  assert.deepEqual(await snapshot(english), englishBefore);
 });

@@ -1,5 +1,5 @@
 {
   "proseWrap": "never",
   "printWidth": 80,
-  "ignorePatterns": ["data/**", "test/fixtures/**"]
+  "ignorePatterns": ["test/fixtures/**"]
 }

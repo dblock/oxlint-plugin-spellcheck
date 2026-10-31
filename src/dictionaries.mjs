@@ -1,9 +1,9 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
-import { resolve, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFileSync, statSync } from "node:fs";
+import { createRequire } from "node:module";
+import { resolve, join, dirname } from "node:path";
 import { KotoshuWasm } from "@kotoshu/wasm";
 
-const bundled = fileURLToPath(new URL("../data/en/", import.meta.url));
+const require = createRequire(import.meta.url);
 const engines = new Map();
 const wordOnly = /^\p{L}[\p{L}\p{M}]*(?:['\u2019]\p{L}[\p{L}\p{M}]*)*$/u;
 const utf8 = (path) =>
@@ -26,15 +26,13 @@ function engine(aff, dic) {
 }
 
 export function getDictionary(entries, cwd) {
+  const projectRequire = createRequire(resolve(cwd, "package.json"));
   const dictionaries = [];
   const words = new Set();
   const pairs = new Set();
   for (const entry of new Set(entries)) {
-    if (entry.startsWith("builtin:") && entry !== "builtin:en") {
-      throw new Error(`Unknown bundled dictionary: ${entry}.`);
-    }
-    const path = entry === "builtin:en" ? bundled : resolve(cwd, entry);
-    if (path.endsWith(".txt")) {
+    if (!entry.startsWith("@")) {
+      const path = resolve(cwd, entry);
       for (const [index, line] of utf8(path)
         .split(/\r\n|\r|\n/u)
         .entries()) {
@@ -49,22 +47,21 @@ export function getDictionary(entries, cwd) {
       }
       continue;
     }
-    const stems = [
-      ...new Set(
-        readdirSync(path)
-          .filter((name) => /\.(?:aff|dic)$/u.test(name))
-          .map((name) => name.slice(0, -4)),
-      ),
-    ].sort();
-    if (!stems.length)
-      throw new Error(`No Hunspell dictionary pairs in ${path}.`);
-    for (const stem of stems) {
-      const aff = join(path, `${stem}.aff`);
-      const dic = join(path, `${stem}.dic`);
-      if (!pairs.has(aff)) {
-        dictionaries.push(engine(aff, dic));
-        pairs.add(aff);
-      }
+    const name = entry.includes("/") ? entry : entry.slice(1);
+    if (!/^(?:@[\w.-]+\/)?[\w-][\w.-]*$/u.test(name)) {
+      throw new Error(
+        `Invalid dictionary package: ${entry}. Use @name or @scope/name.`,
+      );
+    }
+    const entrypoint = (
+      name === "dictionary-en" ? require : projectRequire
+    ).resolve(name);
+    const path = dirname(entrypoint);
+    const aff = join(path, "index.aff");
+    const dic = join(path, "index.dic");
+    if (!pairs.has(aff)) {
+      dictionaries.push(engine(aff, dic));
+      pairs.add(aff);
     }
   }
   const suggestions = new Map();

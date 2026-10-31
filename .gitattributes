@@ -1,4 +1,3 @@
 * text=auto eol=lf
-data/en/** -text
 test/fixtures/** -text
 test/fixtures/crlf.js whitespace=cr-at-eol

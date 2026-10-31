@@ -119,7 +119,9 @@ All spelling results are report-only, including with `oxlint --fix`. Suggestions
 
 ## Development
 
-`npm run lint` uses Oxlint with this plugin and Oxfmt. `npm test` packs and installs the plugin, then invokes the actual installed Oxlint CLI with runtime network access blocked. Acceptance cases cover positive/negative results, scope exclusions, source locations, dictionary replacement, native suppression, and read-only behavior.
+`npm run lint` uses Oxlint with this plugin through its public package export, just like a consumer, and Oxfmt. The repository checks comments with the default rule settings; strings and identifiers remain opt-in. Negative test fixtures are excluded, and nested configurations are disabled so their intentional typos cannot override the repository's lint policy.
+
+`npm test` packs and installs the plugin, then invokes the actual installed Oxlint CLI with runtime network access blocked. Acceptance cases cover the repository's own configuration, positive/negative results, scope exclusions, source locations, dictionary replacement, native suppression, and read-only behavior.
 
 CI covers the minimum Node version on Linux and Node 24 on Linux, macOS, and Windows. The bundled dictionary's provenance and separate redistribution terms are preserved in [data/en](data/en/README.md).
 
